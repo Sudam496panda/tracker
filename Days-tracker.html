@@ -1,0 +1,150 @@
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>90 Days Tracker</title>
+
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #ede5e5;
+    text-align: center;
+    padding: 20px;
+  }
+
+  h1 {
+    margin-bottom: 10px;
+  }
+
+   
+  .progress-container {
+    width: 90%;
+    max-width: 900px;
+    background: #ddd;
+    border-radius: 20px;
+    margin: 15px auto;
+    overflow: hidden;
+  }
+
+  .progress-bar {
+    height: 20px;
+    width: 0%;
+    background: #4caf50;
+    transition: 0.3s;
+  }
+
+  .progress-text {
+    margin-top: 5px;
+    font-weight: bold;
+  }
+
+ 
+  #resetBtn {
+    margin-top: 15px;
+    padding: 10px 20px;
+    background: red;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+
+  #resetBtn:hover {
+    background: darkred;
+  }
+ 
+  .container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(18px, 1fr));
+    gap: 5px;
+    max-width: 900px;
+    margin: 20px auto;
+  }
+
+  .box {
+    aspect-ratio: 1 / 1;
+    border: 2px solid #333;
+    background: white;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+
+  .box.active {
+    background: #4caf50;
+    border-color: #4caf50;
+  }
+
+  .box:hover {
+    transform: scale(1.05);
+  }
+</style>
+</head>
+
+<body>
+
+<h1>90 Days Challenge(June)</h1>
+
+ 
+<div class="progress-container">
+  <div class="progress-bar" id="progressBar"></div>
+</div>
+<div class="progress-text" id="progressText">0 / 90 completed</div>
+
+<div class="container" id="grid"></div>
+<button id="resetBtn">Restart</button>
+<script>
+  const grid = document.getElementById("grid");
+  const progressBar = document.getElementById("progressBar");
+  const progressText = document.getElementById("progressText");
+  const resetBtn = document.getElementById("resetBtn");
+ 
+  let saved = JSON.parse(localStorage.getItem("days90")) || [];
+
+  function updateProgress() {
+    const completed = saved.filter(Boolean).length;
+    const percent = (completed / 90) * 100;
+
+    progressBar.style.width = percent + "%";
+    progressText.textContent = `${completed} / 90 completed`;
+  }
+ 
+  for (let i = 0; i < 90; i++) {
+    const box = document.createElement("div");
+    box.classList.add("box");
+
+ 
+    if (saved[i]) {
+      box.classList.add("active");
+    }
+
+    box.addEventListener("click", () => {
+      if (box.classList.contains("active")) return;
+
+      box.classList.add("active");
+      saved[i] = true;
+
+      localStorage.setItem("days90", JSON.stringify(saved));
+
+      updateProgress();
+    });
+
+    grid.appendChild(box);
+  }
+
+  updateProgress();
+
+ 
+  resetBtn.addEventListener("click", () => {
+    const confirmReset = confirm("Are you sure you want to reset all progress?");
+
+    if (confirmReset) {
+      localStorage.removeItem("days90");
+      location.reload();
+    }
+  });
+</script>
+
+</body>
+</html>
